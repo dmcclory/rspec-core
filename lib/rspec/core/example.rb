@@ -296,17 +296,21 @@ An error occurred #{context}
       end
 
       def run_before_each
+        started_at = RSpec::Core::Time.now
         @example_group_instance.setup_mocks_for_rspec
         @example_group_class.run_before_each_hooks(self)
+        record :before_run_time => (Time.now - started_at).to_f
       end
 
       def run_after_each
+        started_at = RSpec::Core::Time.now
         @example_group_class.run_after_each_hooks(self)
         verify_mocks
       rescue Exception => e
         set_exception(e, "in an after(:each) hook")
       ensure
         @example_group_instance.teardown_mocks_for_rspec
+        record :after_run_time => (Time.now - started_at).to_f
       end
 
       def verify_mocks
